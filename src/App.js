@@ -5,7 +5,7 @@ import Cart from "./components/Cart/Cart";
 import Layout from "./components/Layout/Layout";
 import Products from "./components/Shop/Products";
 import Notification from "./components/UI/Notification";
-import { sendCartData } from "./store/cart-slice";
+import { fetchCartData, sendCartData } from "./store/cart-slice";
 
 let isInitial = true
 
@@ -16,12 +16,20 @@ const App = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
+    dispatch(fetchCartData())
+
+  }, [dispatch])
+
+  useEffect(() => {
     if(isInitial) { //avoid sending the empty data when the application starts
       isInitial = false
       return
     }
 
-    dispatch(sendCartData(cart))
+    if(cart.changed) { //avoid sending cart data to firebase when starts the application; think with line 18 <-> 21
+      dispatch(sendCartData(cart))
+    }
+
   }, [cart, dispatch])
   
   return(
