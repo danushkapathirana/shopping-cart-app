@@ -5,7 +5,7 @@ import Cart from "./components/Cart/Cart";
 import Layout from "./components/Layout/Layout";
 import Products from "./components/Shop/Products";
 import Notification from "./components/UI/Notification";
-import { uiActions } from "./store/ui-slice";
+import { sendCartData } from "./store/cart-slice";
 
 let isInitial = true
 
@@ -16,32 +16,12 @@ const App = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    const sendCartData = async () => {
-
-      dispatch(uiActions.showNotification({status: 'pending', title: 'Sending...', message: 'Sending cart data!'}))
-
-      const response = await fetch(
-        'https://shopping-cart-app-b19c5-default-rtdb.firebaseio.com/cart.json', 
-        {method: 'PUT', body: JSON.stringify(cart)
-      })
-  
-      if(!response.ok) {
-        throw new Error('Sending cart data is failed!')
-      }
-
-      // const responseData = await response.json()
-      dispatch(uiActions.showNotification({status: 'success', title: 'Success', message: 'Send cart data successfully!'}))
-    }
-
     if(isInitial) { //avoid sending the empty data when the application starts
       isInitial = false
       return
     }
 
-    sendCartData().catch((err) => {
-      dispatch(uiActions.showNotification({status: 'error', title: 'Error', message: 'Sending cart data failed!'}))
-    })
-
+    dispatch(sendCartData(cart))
   }, [cart, dispatch])
   
   return(
